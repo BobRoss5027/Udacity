@@ -62,7 +62,7 @@ resource "azurerm_lb" "main" {
 
   frontend_ip_configuration {
     name                 = "PublicIPAddress"
-    public_ip_address_id = azurerm_public_ip.main.id
+    public_ip_address_id = azurerm_public_ip.external.id
   }
 }
 
