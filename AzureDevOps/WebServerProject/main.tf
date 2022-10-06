@@ -105,7 +105,7 @@ resource "azurerm_linux_virtual_machine" "main" {
   size                            = "Standard_D2s_v3"
   admin_username                  = "${var.username}"
   admin_password                  = "${var.password}"
-  availability_set_id             = "main-aset"
+  availability_set_id             = azurerm_availability_set.main.id
   disable_password_authentication = false
   network_interface_ids = [
     azurerm_network_interface.main.id,
