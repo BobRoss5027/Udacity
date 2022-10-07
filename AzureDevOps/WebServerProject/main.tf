@@ -2,26 +2,26 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "main" {
+resource "azurerm_resource_group" "main_rg" {
   name     = "${var.prefix}-resources"
   location = var.location
 }
 
-resource "azurerm_virtual_network" "main" {
+resource "azurerm_virtual_network" "main_vn" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/22"]
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 }
 
-resource "azurerm_subnet" "internal" {
+resource "azurerm_subnet" "main_sub" {
   name                 = "internal"
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-resource "azurerm_network_security_group" "main" {
+resource "azurerm_network_security_group" "main_nsg" {
   name                = "BasicCommunicationControl"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
@@ -33,6 +33,7 @@ resource "azurerm_network_security_group" "main" {
     access                     = "Allow"
     protocol                   = "*"
     source_address_prefix      = "VirtualNetwork"
+    source_port_range = "*"
   }
 
   security_rule {
@@ -42,6 +43,7 @@ resource "azurerm_network_security_group" "main" {
     access                     = "Deny"
     protocol                   = "*"
     source_address_prefix      = "Internet"
+    source_port_range = "@"
   }
 
   tags = {
@@ -49,13 +51,13 @@ resource "azurerm_network_security_group" "main" {
   }
 }
 
-resource "azurerm_public_ip" "external" {
+resource "azurerm_public_ip" "main_pubip" {
   name = "external"
   resource_group_name = azurerm_resource_group.main.name
   location = azurerm_resource_group.main.location
   allocation_method = "Static"
 }
-resource "azurerm_lb" "main" {
+resource "azurerm_lb" "main_lb" {
   name                = "LoadBalancer"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
@@ -66,13 +68,14 @@ resource "azurerm_lb" "main" {
   }
 }
 
-resource "azurerm_lb_backend_address_pool" "main" {
+resource "azurerm_lb_backend_address_pool" "main_pool" {
   loadbalancer_id = azurerm_lb.main.id
   name            = "BackEndAddressPool"
 }
 
-resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
+resource "azurerm_network_interface" "main_nic" {
+  count="${var.amount}"
+  name                = "${var.prefix}${count.index}-nic"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
 
@@ -83,7 +86,7 @@ resource "azurerm_network_interface" "main" {
   }
 }
 
-resource "azurerm_managed_disk" "main" {
+resource "azurerm_managed_disk" "main_disk" {
   name                 = "acctestmd"
   location             = azurerm_resource_group.main.location
   resource_group_name  = azurerm_resource_group.main.name
@@ -92,14 +95,14 @@ resource "azurerm_managed_disk" "main" {
   disk_size_gb         = "1"
 }
 
-resource "azurerm_availability_set" "main" {
+resource "azurerm_availability_set" "main_aset" {
   name                = "main-aset"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   platform_fault_domain_count = 2
 }
 
-resource "azurerm_linux_virtual_machine" "main" {
+resource "azurerm_linux_virtual_machine" "main_vm" {
   count                           = "${var.amount}"
   name                            = "${var.prefix}${count.index}-vm"
   resource_group_name             = azurerm_resource_group.main.name
@@ -109,9 +112,9 @@ resource "azurerm_linux_virtual_machine" "main" {
   admin_password                  = "${var.password}"
   availability_set_id             = azurerm_availability_set.main.id
   disable_password_authentication = false
-  network_interface_ids = [
-    azurerm_network_interface.main.id,
-  ]
+  network_interface_ids = [element(
+    azurerm_network_interface.main.id,count.index
+  )]
 
   source_image_reference {
     publisher = "Canonical"
