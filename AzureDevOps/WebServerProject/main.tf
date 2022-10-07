@@ -99,7 +99,8 @@ resource "azurerm_availability_set" "main" {
 }
 
 resource "azurerm_linux_virtual_machine" "main" {
-  name                            = "${var.prefix}-vm"
+  count                           = "${var.amount}"
+  name                            = "${var.prefix}${count.index}-vm"
   resource_group_name             = azurerm_resource_group.main.name
   location                        = azurerm_resource_group.main.location
   size                            = "Standard_D2s_v3"
