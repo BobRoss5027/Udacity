@@ -112,9 +112,9 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
   admin_password                  = "${var.password}"
   availability_set_id             = azurerm_availability_set.main_aset.id
   disable_password_authentication = false
-  network_interface_ids = [
-    azurerm_network_interface.main_nic.id[count.index]
-  ]
+  network_interface_ids = [element(
+    azurerm_network_interface.main_nic.*.id,count.index
+  )]
 
   source_image_reference {
     publisher = "Canonical"
