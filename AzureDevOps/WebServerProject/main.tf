@@ -113,7 +113,7 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
   availability_set_id             = azurerm_availability_set.main_aset.id
   disable_password_authentication = false
   network_interface_ids = [
-    azurerm_network_interface.main_nic[count.index]
+    azurerm_network_interface.main_nic.id[count.index]
   ]
 
   source_image_reference {
