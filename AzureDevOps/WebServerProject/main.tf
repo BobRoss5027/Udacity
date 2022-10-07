@@ -43,7 +43,7 @@ resource "azurerm_network_security_group" "main_nsg" {
     access                     = "Deny"
     protocol                   = "*"
     source_address_prefix      = "Internet"
-    source_port_range = "@"
+    source_port_range = "*"
   }
 
   tags = {

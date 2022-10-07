@@ -14,7 +14,7 @@ variable "username" {
 }
 
 variable "password" {
-  default = "P@ssw0rd"
+  default = "P@ssw0rd123"
   description = "The password for the virtual machine"
 }
 
