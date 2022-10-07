@@ -6,6 +6,7 @@
 	},
 	"builders": [{
 		"os_type": "Linux",
+<<<<<<< HEAD
     "image_publisher": "Canonical",
     "image_offer": "UbuntuServer",
     "image_sku": "18.04-LTS",
@@ -15,6 +16,17 @@
  
     "location": "South UK",
     "vm_size": "Standard_B1s"
+=======
+    		"image_publisher": "Canonical",
+    		"image_offer": "UbuntuServer",
+    		"image_sku": "18.04-LTS",
+ 
+    		"managed_image_resource_group_name": "packerImage-rg",
+    		"managed_image_name": "myPackerImage",
+ 
+    		"location": "South UK",
+    		"vm_size": "Standard_B1s"
+>>>>>>> 68f3973d2c9701d9bda7eb5d1376fba069eaf88c
 	}],
 	"provisioners": [{
 		"inline": [
