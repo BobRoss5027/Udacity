@@ -135,8 +135,8 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
 
 resource "azurerm_virtual_machine_data_disk_attachment" "main_dda" {
   count              = "${var.amount}"
-  managed_disk_id    = [element(azurerm_managed_disk.main_disk.*.id,count.index)]
-  virtual_machine_id = [element(azurerm_linux_virtual_machine.main_vm.*.id,count.index)]
+  managed_disk_id    = [element(azurerm_managed_disk.main_disk.*.id,"${count.index}")]
+  virtual_machine_id = [element(azurerm_linux_virtual_machine.main_vm.*.id,"${count.index}")]
   lun                = "10"
   caching            = "ReadWrite"
 }
