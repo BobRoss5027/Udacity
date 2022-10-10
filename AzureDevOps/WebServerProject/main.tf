@@ -46,6 +46,8 @@ resource "azurerm_network_security_group" "main_nsg" {
     protocol                   = "*"
     source_address_prefix      = "Internet"
     source_port_range = "*"
+    destination_port_range = "*"
+    destination_address_prefix = "*"
   }
 
   tags = {
