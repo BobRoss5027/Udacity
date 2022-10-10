@@ -122,17 +122,10 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
   admin_password                  = "${var.password}"
   availability_set_id             = azurerm_availability_set.main_aset.id
   disable_password_authentication = false
+  source_image_id = data.azurerm_image.customimage.id
   network_interface_ids = [element(
     azurerm_network_interface.main_nic.*.id,count.index
   )]
-
-  source_image_reference {
-    id = data.azurerm_image.customimage.id
-    #publisher = "Canonical"
-    #offer     = "UbuntuServer"
-    #sku       = "18.04-LTS"
-    #version   = "latest"
-  }
 
   os_disk {
     storage_account_type = "Standard_LRS"
