@@ -2,9 +2,18 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  tags = {
+    source = "Terraform"
+    project = "AzureDevOps"
+  }
+}
+
 resource "azurerm_resource_group" "main_rg" {
   name     = "${var.prefix}-resources"
   location = var.location
+
+  tags = local.tags
 }
 
 resource "azurerm_virtual_network" "main_vn" {
@@ -12,6 +21,8 @@ resource "azurerm_virtual_network" "main_vn" {
   address_space       = ["10.0.0.0/22"]
   location            = azurerm_resource_group.main_rg.location
   resource_group_name = azurerm_resource_group.main_rg.name
+
+  tags = local.tags
 }
 
 resource "azurerm_subnet" "main_sub" {
@@ -19,6 +30,8 @@ resource "azurerm_subnet" "main_sub" {
   resource_group_name  = azurerm_resource_group.main_rg.name
   virtual_network_name = azurerm_virtual_network.main_vn.name
   address_prefixes     = ["10.0.2.0/24"]
+
+  tags = local.tags
 }
 
 resource "azurerm_network_security_group" "main_nsg" {
@@ -50,9 +63,7 @@ resource "azurerm_network_security_group" "main_nsg" {
     destination_address_prefix = "*"
   }
 
-  tags = {
-    environment = "Production"
-  }
+ tags = local.tags
 }
 
 resource "azurerm_public_ip" "main_pubip" {
@@ -60,6 +71,8 @@ resource "azurerm_public_ip" "main_pubip" {
   resource_group_name = azurerm_resource_group.main_rg.name
   location = azurerm_resource_group.main_rg.location
   allocation_method = "Static"
+
+  tags = local.tags
 }
 resource "azurerm_lb" "main_lb" {
   name                = "LoadBalancer"
@@ -70,6 +83,8 @@ resource "azurerm_lb" "main_lb" {
     name                 = "PublicIPAddress"
     public_ip_address_id = azurerm_public_ip.main_pubip.id
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_lb_backend_address_pool" "main_pool" {
@@ -88,6 +103,8 @@ resource "azurerm_network_interface" "main_nic" {
     subnet_id                     = azurerm_subnet.main_sub.id
     private_ip_address_allocation = "Dynamic"
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_managed_disk" "main_disk" {
@@ -98,6 +115,8 @@ resource "azurerm_managed_disk" "main_disk" {
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = "32"
+
+  tags = local.tags
 }
 
 resource "azurerm_availability_set" "main_aset" {
@@ -105,6 +124,8 @@ resource "azurerm_availability_set" "main_aset" {
   location            = azurerm_resource_group.main_rg.location
   resource_group_name = azurerm_resource_group.main_rg.name
   platform_fault_domain_count = 2
+
+  tags = local.tags
 }
 
 data "azurerm_image" "customimage"{
@@ -131,5 +152,7 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
+
+  tags = local.tags
 }
 
