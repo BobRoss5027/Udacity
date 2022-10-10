@@ -91,12 +91,13 @@ resource "azurerm_network_interface" "main_nic" {
 }
 
 resource "azurerm_managed_disk" "main_disk" {
-  name                 = "acctestmd"
+  count="${var.amount}"
+  name                 = "${var.prefix}${count.index}-disk"
   location             = azurerm_resource_group.main_rg.location
   resource_group_name  = azurerm_resource_group.main_rg.name
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
-  disk_size_gb         = "1"
+  disk_size_gb         = "32"
 }
 
 resource "azurerm_availability_set" "main_aset" {
@@ -104,6 +105,11 @@ resource "azurerm_availability_set" "main_aset" {
   location            = azurerm_resource_group.main_rg.location
   resource_group_name = azurerm_resource_group.main_rg.name
   platform_fault_domain_count = 2
+}
+
+data "azurerm_image" "customimage"{
+  name = var.image_name
+  resource_group_name = var.image_resource_name
 }
 
 resource "azurerm_linux_virtual_machine" "main_vm" {
@@ -121,14 +127,23 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
   )]
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
+    id = data.azurerm_image.customimage.id
+    #publisher = "Canonical"
+    #offer     = "UbuntuServer"
+    #sku       = "18.04-LTS"
+    #version   = "latest"
   }
 
   os_disk {
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "main_dda" {
+  count              = "${var.amount}"
+  managed_disk_id    = [element(azurerm_managed_disk.main_disk.*.id,count.index)]
+  virtual_machine_id = [element(azurerm_linux_virtual_machine.main_vm.*.id,count.index)]
+  lun                = "10"
+  caching            = "ReadWrite"
 }
