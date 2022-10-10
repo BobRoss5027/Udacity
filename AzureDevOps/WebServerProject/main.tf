@@ -91,7 +91,7 @@ resource "azurerm_network_interface" "main_nic" {
 }
 
 resource "azurerm_managed_disk" "main_disk" {
-  count="${var.amount}"
+  count                = "${var.amount}"
   name                 = "${var.prefix}${count.index}-disk"
   location             = azurerm_resource_group.main_rg.location
   resource_group_name  = azurerm_resource_group.main_rg.name
@@ -133,10 +133,3 @@ resource "azurerm_linux_virtual_machine" "main_vm" {
   }
 }
 
-resource "azurerm_virtual_machine_data_disk_attachment" "main_dda" {
-  count              = "${var.amount}"
-  managed_disk_id    = [element(azurerm_managed_disk.main_disk.*.id,"${count.index}")]
-  virtual_machine_id = [element(azurerm_linux_virtual_machine.main_vm.*.id,"${count.index}")]
-  lun                = "10"
-  caching            = "ReadWrite"
-}
