@@ -17,7 +17,7 @@
 		"managed_image_resource_group_name": "packerImage-rg",
 		"managed_image_name": "packerImage",
 
-		"location": "South UK",
+		"location": "uksouth",
 		"vm_size": "Standard_B1s"
 	}],
 	"provisioners": [{
