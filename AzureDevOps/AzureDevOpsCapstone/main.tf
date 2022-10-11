@@ -30,8 +30,6 @@ resource "azurerm_subnet" "main_sub" {
   resource_group_name  = azurerm_resource_group.main_rg.name
   virtual_network_name = azurerm_virtual_network.main_vn.name
   address_prefixes     = ["10.0.2.0/24"]
-
-  tags = local.tags
 }
 
 resource "azurerm_network_security_group" "main_nsg" {
@@ -64,6 +62,12 @@ resource "azurerm_network_security_group" "main_nsg" {
   }
 
  tags = local.tags
+}
+
+resource "azurerm_network_interface_security_group_association" "main_nicasc" {
+  count = "${var.amount}"
+  network_interface_id = "${element(azurerm_network_interface.main_nic.*.id, count.index)}"
+  network_security_group_id = azurerm_network_security_group.main_nsg.id
 }
 
 resource "azurerm_public_ip" "main_pubip" {
@@ -105,6 +109,13 @@ resource "azurerm_network_interface" "main_nic" {
   }
 
   tags = local.tags
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "main_nicapasc" {
+  count = var.amount
+  network_interface_id = "${element(azurerm_network_interface.main_nic.*.id, count.index)}"
+  ip_configuration_name = "${var.prefix}-nicapasc"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.main_pool.id
 }
 
 resource "azurerm_managed_disk" "main_disk" {
