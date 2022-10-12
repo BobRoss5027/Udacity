@@ -13,7 +13,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        (cd .. && cd AzureDevOps/CICDPipeline/ && make install)        
+        (cd AzureDevOps/CICDPipeline/ && make install)        
     - name: Lint with pylint
       run: |
         (cd /Udacity/AzureDevOps/CICDPipeline/ && make lint)
