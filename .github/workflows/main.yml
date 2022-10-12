@@ -1,7 +1,4 @@
-on:
-  push:
-    paths:
-      - AzureDevOps/CICDPipeline
+on: [push]
   
 jobs:
   build:
