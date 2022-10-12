@@ -9,7 +9,13 @@ jobs:
     
     steps: 
     - uses: actions/checkout@v2
+    - name: Set up Python 3.5
+      run: |
+        (cd /Udacity/AzureDevOps/CICDPipeline/ && make lint)
+      
+    - name: Test with pytest
+      run: |
+        (cd /Udacity/AzureDevOps/CICDPipeline/ && make test)
     
-    - name: Run make command
-      run : make AzureDevOps/CICDPipeline/hello
-    
+
+
