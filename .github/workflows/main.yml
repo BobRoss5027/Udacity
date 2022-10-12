@@ -1,5 +1,7 @@
 on:
-  workflow_dispatch:
+  push:
+    paths:
+      - AzureDevOps/CICDPipeline
   
 jobs:
   build:
@@ -9,5 +11,5 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Run make command
-      run : make hello
+      run : make AzureDevOps/CICDPipeline/hello
     
