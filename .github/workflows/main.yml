@@ -16,11 +16,11 @@ jobs:
         (cd AzureDevOps/CICDPipeline/ && make install)        
     - name: Lint with pylint
       run: |
-        (cd /Udacity/AzureDevOps/CICDPipeline/ && make lint)
+        (cd AzureDevOps/CICDPipeline/ && make lint)
       
     - name: Test with pytest
       run: |
-        (cd /Udacity/AzureDevOps/CICDPipeline/ && make test)
+        (cd AzureDevOps/CICDPipeline/ && make test)
     
 
 
